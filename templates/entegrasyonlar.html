@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Entegrasyonlar{% endblock %}
+
+{% block content %}
+<h1>🔗 Entegrasyonlar</h1>
+
+<div id="voice-control-section">
+    <h2>🎙️ Sesli Komutlar</h2>
+    <p>Spotify veya E-posta entegrasyonunu sesli komutlarla yönetebilirsiniz.</p>
+    <button onclick="startVoiceCommand()">Sesli Komut Başlat</button>
+    <p id="command-output">Verilen komut: <span id="command-text">Bekleniyor...</span></p>
+</div>
+
+<div id="integrations-section">
+    <h2>🔧 Mevcut Entegrasyonlar</h2>
+    <ul>
+        <li>Spotify Entegrasyonu</li>
+        <li>E-posta Entegrasyonu</li>
+    </ul>
+</div>
+
+<div id="spotify-controls">
+    <h2>🎵 Spotify Kontrolleri</h2>
+    <ul>
+        <li>Spotify Aç</li>
+        <li>Şarkıyı Başlat</li>
+        <li>Şarkıyı Durdur</li>
+        <li>Şarkıyı Değiştir</li>
+    </ul>    
+</div>
+<div id="outlook-controls">
+    <h2>📧 Outlook Kontrolleri</h2>
+    <ul>
+        <li>Outlook Aç</li>
+        <li>e-posta gönder</li>
+        <li>e-posta oku</li>
+    </ul>    
+</div>
+
+
+<script>
+    function startVoiceCommand() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'tr-TR';
+
+        recognition.onstart = function() {
+            document.getElementById('command-text').innerText = 'Dinleniyor...';
+        };
+
+        recognition.onresult = function(event) {
+            const command = event.results[0][0].transcript;
+            document.getElementById('command-text').innerText = command;
+            processCommand(command);
+        };
+
+        recognition.onerror = function() {
+            document.getElementById('command-text').innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
+        };
+
+        recognition.start();
+    }
+
+    function processCommand(command) {
+    if (command.includes('Spotify aç')) {
+        openSpotify();
+    } else if (command.includes('şarkıyı başlat')) {
+        playSpotify();
+    } else if (command.includes('şarkıyı değiştir')) {
+        nextTrackSpotify();
+    } else if (command.includes('şarkıyı durdur')) {
+        pauseSpotify();
+    } else if (command.includes('çalma listesini değiştir')) {
+        changePlaylistSpotify();
+    } else if (command.toLowerCase().includes('outlook aç')) {  // 'outlook aç' komutunun küçük harflerle kontrolü
+        openOutlook();
+    } else if (command.toLowerCase().includes('e-posta gönder')) {
+        sendEmail();
+    } else if (command.toLowerCase().includes('e-posta oku')) {
+        readEmail();
+    } else {
+        alert('Komut anlaşılamadı: ' + command);
+    }
+    }
+
+    function openSpotify() {
+        window.location.href = "spotify:";
+    }
+
+    function playSpotify() {
+        fetch('/start-song')
+            .then(response => response.json())
+            .then(data => alert(data.message));
+    }
+
+    function pauseSpotify() {
+        fetch('/pause-song')
+            .then(response => response.json())
+            .then(data => alert(data.message));
+    }
+
+    function nextTrackSpotify() {
+        fetch('/next-song')
+            .then(response => response.json())
+            .then(data => alert(data.message));
+    }
+
+    function openOutlook() {
+        fetch('/open-outlook')
+            .then(response => response.json())
+            .then(data => alert(data.message));
+    }
+
+    function sendEmail() {
+    const recipient = prompt("E-posta alıcısını girin:");
+    const subject = prompt("E-posta konusunu girin:");
+    const body = prompt("E-posta içeriğini girin:");
+
+    fetch('/send-email', {
+        method: 'POST',
+        body: new URLSearchParams({
+            'to': recipient,
+            'subject': subject,
+            'body': body
+        })
+    })
+    .then(response => response.json())
+    .then(data => alert(data.response));
+    }
+
+    function readEmail() {
+    fetch('/read-email')
+        .then(response => response.json())
+        .then(data => alert(data.response));
+    }
+</script>
+
+{% endblock %}

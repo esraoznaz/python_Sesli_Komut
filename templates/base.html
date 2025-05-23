@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>{% block title %}Personal Assistant{% endblock %}</title>
+    <style>
+        /* Alt menü sadece ana başlık üzerine gelindiğinde görünsün */
+        .submenu {
+            display: none;
+        }
+
+        .menu-item:hover .submenu {
+            display: block;
+        }
+
+        .submenu li {
+            padding-left: 20px;
+        }
+
+        /* Alt menü başlıkları için stil */
+        .submenu a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="{{ url_for('index') }}" style="color: red; text-decoration: none;"><h2>Esra ÖZNAZ</h2></a>
+
+        <ul>
+            <li><a href="/seslikomut">🎤 Sesli Komut</a></li>
+            <li class="menu-item">
+                <a href="/duyguanalizi">😊 Duygu Analizi</a>
+                
+            </li>
+            <li><a href="/takvim">📅 Kişisel Takvim</a></li>
+            <li><a href="/entegrasyonlar">🔗 Entegrasyonlar</a></li>
+            <li><a href="/gorevlistesi">📝 Görev Listesi</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

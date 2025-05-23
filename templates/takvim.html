@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Takvim</h1>
+
+    <!-- 🎤 Sesli Komutla Etkinlik Ekleme Formu -->
+    <form method="POST">
+        <h3>Sesli Komutla Etkinlik Ekle</h3>
+        <button type="submit" name="voice_event" value="1">🎤 Sesli Komut Başlat</button>
+    </form>
+
+    <!-- Manuel Etkinlik Ekleme Formu -->
+    <form method="POST">
+        <h3>Yeni Etkinlik Ekle</h3>
+        <label for="date">Tarih:</label>
+        <input type="date" id="date" name="date" required>
+        <br>
+        <label for="event">Etkinlik:</label>
+        <input type="text" id="event" name="event" required>
+        <br>
+        <button type="submit">Etkinlik Ekle</button>
+    </form>
+
+    <!-- Takvim Gösterimi -->
+    <div>
+        {% for month, data in calendar_data.items() %}
+            <h2>{{ data.month_name }}</h2>
+            <table border="1">
+                <tr>
+                    {% for day in data.days_in_week %}
+                        <th>{{ day }}</th>
+                    {% endfor %}
+                </tr>
+                {% for week in data.month_grid %}
+                    <tr>
+                        {% for day in week %}
+                            <td>
+                                {% if day %}
+                                    {{ day }}
+                                    <br>
+                                    {{ data.month_events[day] }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    </div>
+{% endblock %}

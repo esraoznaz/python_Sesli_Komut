@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Sesli Komut{% endblock %}
+
+{% block content %}
+<h1>🎤 Sesli Komut</h1>
+
+<h2>🎙️ Sesli Komutlar</h2>
+    <p>Bilgisayar ayarlarını sesli komutlarla yönetebilirsiniz.</p>
+
+<!-- Sesli komut butonu ve durum mesajı -->
+<button id="start-button">Sesli Komut Başlat</button>
+<p id="status"></p>
+
+<div id="spotify-controls">
+    <h2>🎙️ Sesli Komut Kontrolleri</h2>
+    <ul>
+        <li>Sesi aç</li>
+        <li>Sesi kıs</li>
+        <li>Parlaklığı azalt</li>
+        <li>Parlaklığı arttır</li>
+    </ul>    
+</div>
+
+<script>
+    // Web Speech API ile sesli komut almayı sağlayan işlev
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'tr-TR';  // Türkçe dil desteği
+    recognition.interimResults = false;  // Sadece sonucun gelmesini bekle
+    recognition.maxAlternatives = 1;  // Sadece 1 alternatif komut döndür
+
+    // Sesli komut butonuna tıklama işlemi
+    document.getElementById("start-button").addEventListener("click", function() {
+        // Mikrofonu aç ve sesli komut al
+        recognition.start();
+        
+        // Sesli komut başladığında durum mesajı güncelle
+        document.getElementById("status").innerText = "Dinleniyor...";
+
+        recognition.onresult = function(event) {
+            const command = event.results[0][0].transcript.toLowerCase();  // Alınan komut
+
+            // Flask ile sesli komut işlemi başlatılıyor
+            fetch('/voice-command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ command: command })  // Komut JSON formatında gönderiliyor
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("status").innerText = data.message;
+            })
+            .catch(error => {
+                document.getElementById("status").innerText = "Bir hata oluştu!";
+                console.error('Error:', error);
+            });
+        };
+
+        recognition.onerror = function(event) {
+            document.getElementById("status").innerText = "Bir hata oluştu!";
+            console.error('Error:', event.error);
+        };
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Duygu Analizi Yükle{% endblock %}
+
+{% block content %}
+<h1>🎤 Duygu Analizi Yükle</h1>
+
+<div class="container">
+    <form action="/duyguanalizi" method="POST" enctype="multipart/form-data">
+        <label for="file">Ses Dosyasını Yükleyin (.wav):</label><br>
+        <input type="file" name="file" accept=".wav" required><br>
+        <button type="submit">Yükle ve Analiz Et</button>
+    </form>
+
+    {% if emotion %}
+        <h3>Duygu Analizi Sonucu:</h3>
+        <p><strong>Sesin Duygusu: </strong>{{ emotion }}</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+ 
